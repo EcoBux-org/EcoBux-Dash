@@ -1,0 +1,22 @@
+{
+  "name": "ecobuxs-dash",
+  "version": "1.0.0",
+  "description": "Ecobux Dashboard",
+  "main": "viz.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecobx/ecobuxs-dash.git"
+  },
+  "author": "Lucas Oberwager <lucas@ecobux.org>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ecobux/ecobuxs-dash/issues"
+  },
+  "homepage": "https://ecobux.org/",
+  "dependencies": {
+    "web3": "^0.17.0-alpha"
+  }
+}

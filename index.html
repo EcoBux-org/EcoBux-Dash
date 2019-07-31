@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+    
+    <style>
+      body {
+        padding-left: 50px;
+        padding-right: 50px;
+      }
+      #label3 {
+        word-wrap: break-word;
+      }
+      #leaflet-map {
+	width: 600px;
+	height: 400px;
+      }
+      .info {
+        padding: 6px 8px;
+        font: 14px/16px Arial, Helvetica, sans-serif;
+        background: white;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+      }
+      .info h4 {
+        margin: 0 0 5px;
+        color: #777;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div class="container-fluid">
+
+      <div class="row">
+        <div>
+          <h1 class="page-header">Ecobux Dashboard</h1>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="row placeholders">
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>ETH</h4>
+                    <span class="text-muted" id="label1"></span>
+                  </div>
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>Block</h4>
+                    <span class="text-muted" id="label2"></span>
+                  </div>
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>Address</h4>
+                    <span class="text-muted" id="label3"></span>
+                  </div>
+                  <div class="col-xs-6 col-sm-3 placeholder">
+                    <h4>Ecobux</h4>
+                    <span class="text-muted" id="label4"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">Map</h2>
+          <div id="leaflet-map"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">User Functions</h2>
+            <div class="form-group">
+              <label for="buyEcobInput">Purchase Ecobux:</label>
+              <input type="number" class="form-control" id="buyEcobInput" disabled>
+            </div>
+            <button type="button" id="buyEcobux" disabled
+              class="btn btn-primary">PayPal</button>
+            <div class="form-group">
+              <label for="buyAllotInput">Buy allotments:</label>
+              <input type="number" class="form-control" id="buyAllotInput">
+            </div>
+            <button type="submit" id="buyAllotment"
+              class="btn btn-primary">Protect</button>
+            <div class="form-group">
+              <label for="buyAddon">Buy microaddons:</label>
+              <input type="number" class="form-control" id="buyAddonInput">
+            </div>
+            <button type="submit" id="buyAddon" 
+              class="btn btn-primary">Pledge</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">Testing Functions</h2>
+            <div class="form-group">
+              <label for="mintEcobAddr">Mint Ecobux:</label>
+              <input type="text" class="form-control" id="mintEcobAddr">
+              <input type="number" class="form-control" id="mintEcobAmount">
+            </div>
+            <button type="button" id="mintEcob" 
+              class="btn btn-primary">Mint</button>
+            <div class="form-group">
+              <label for="createAllotInput">Create allotments:</label>
+              <input type="text" class="form-control" id="createAllotInput">
+            </div>
+            <button type="submit" id="createAllotment"
+              class="btn btn-primary">Create</button>
+            <div class="form-group">
+              <label for="createAddon">Create microaddons:</label>
+              <input type="number" class="form-control" id="createAddonPrice">
+              <input type="number" class="form-control" id="createAddonPurchasable">
+            </div>
+            <button type="submit" id="createAddon" 
+              class="btn btn-primary">Pledge</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <h2 class="sub-header">Transactions</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>block#</th>
+                  <th>from</th>
+                  <th>to</th>
+                  <th>input</th>
+                </tr>
+              </thead>
+              <tbody id="transactions">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/web3/dist/web3.min.js"></script>
+
+    <script type="text/javascript" src="https://leafletjs.com/examples/choropleth/us-states.js"></script>
+    <script src="mamoni.js"></script>
+    <script src="abi.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
