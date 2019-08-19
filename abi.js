@@ -639,7 +639,7 @@ var abiArray = [
       "inputs": [
         {
           "name": "_allotments",
-          "type": "uint256[2][][]"
+          "type": "uint256[2][][2001]"
         }
       ],
       "name": "createAllotment",
@@ -779,22 +779,6 @@ var abiArray = [
           "name": "addy",
           "type": "address"
         },
-        {
-          "name": "",
-          "type": "address"
-        },
-        {
-          "name": "",
-          "type": "bytes"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        }
       ],
       "name": "ownedAllotments",
       "outputs": [

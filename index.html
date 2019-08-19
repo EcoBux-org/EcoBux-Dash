@@ -22,6 +22,9 @@
         padding-left: 50px;
         padding-right: 50px;
       }
+      select {
+        width: 100%;
+      }
       #label3 {
         word-wrap: break-word;
       }
@@ -64,6 +67,7 @@
                   </div>
                   <div class="col-xs-6 col-sm-3 placeholder">
                     <h4>Address</h4>
+                    <select name='address' id="address"></select>
                     <span class="text-muted" id="label3"></span>
                   </div>
                   <div class="col-xs-6 col-sm-3 placeholder">
@@ -93,8 +97,15 @@
             <button type="button" id="buyEcobux" disabled
               class="btn btn-primary">PayPal</button>
             <div class="form-group">
+              <label for="apprEcobAmount">Approve Ecobux:</label>
+              <input type="number" class="form-control" id="apprEcobAmount">
+            </div>
+            <button type="button" id="apprEcob" 
+              class="btn btn-primary">Approve</button>
+            <div class="form-group">
               <label for="buyAllotInput">Buy allotments:</label>
-              <input type="number" class="form-control" id="buyAllotInput">
+              <input type="text" class="form-control" id="buyAllotTo">
+              <input type="number" class="form-control" id="buyAllotAmount">
             </div>
             <button type="submit" id="buyAllotment"
               class="btn btn-primary">Protect</button>
@@ -104,6 +115,12 @@
             </div>
             <button type="submit" id="buyAddon" 
               class="btn btn-primary">Pledge</button>
+            <div class="form-group">
+              <label for="ownedAllotments">Owned Allotments:</label>
+              <input type="text" class="form-control" id="ownedAllotAddr">
+            </div>
+            <button type="submit" id="ownedAllotments" 
+              class="btn btn-primary">Check</button>
         </div>
       </div>
 
@@ -119,7 +136,7 @@
               class="btn btn-primary">Mint</button>
             <div class="form-group">
               <label for="createAllotInput">Create allotments:</label>
-              <input type="text" class="form-control" id="createAllotInput">
+              <!-- <input type="text" class="form-control" id="createAllotInput"> -->
             </div>
             <button type="submit" id="createAllotment"
               class="btn btn-primary">Create</button>
@@ -159,7 +176,6 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/web3/dist/web3.min.js"></script>
 
-    <script type="text/javascript" src="https://leafletjs.com/examples/choropleth/us-states.js"></script>
     <script src="mamoni.js"></script>
     <script src="abi.js"></script>
     <script src="main.js"></script>

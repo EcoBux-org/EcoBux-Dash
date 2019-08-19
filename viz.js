@@ -1,12 +1,13 @@
 // NOTE: Need to compile with browserify viz.js -o main.js
 var SolidityCoder = require("web3/lib/solidity/coder.js");
 
-var PAJcontractAddress = '0x7d9fAEaBaEBF84573030f2c07c073Eb8D91a2459';
-var ECOBcontractAddress = '0x92AeD884A2aAf1eb25a4dd479ad8406A9dFF86c4';
+var PAJcontractAddress = '0x5D1E04C0783700B61D04D02215344EE32B38C6A9';
+var ECOBcontractAddress = '0x394372eAE1E89C8D00DE8Bc1cb629fA24d1654aC';
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-var account = web3.eth.accounts[0];
+var accounts = web3.eth.accounts;
+var account = accounts[0];
 
 web3.eth.defaultAccount = account;
 
@@ -19,50 +20,10 @@ var functionHashes = getFunctionHashes(abiArray);
 var contract = web3.eth.contract(abiArray).at(PAJcontractAddress);
 var ecob = web3.eth.contract(abiArrayEcob).at(ECOBcontractAddress);
 
-// Setup filter to watch transactions
-/*
-var filter = web3.eth.filter('latest');
-
-filter.watch(function(error, result){
-  if (error) return;
-  
-  var block = web3.eth.getBlock(result, true);
-  console.log('block #' + block.number);
-
-  console.dir(block.transactions);
-
-  for (var index = 0; index < block.transactions.length; index++) {
-    var t = block.transactions[index];
-
-    // Decode from
-    var from = t.from==account ? "me" : t.from;
-
-    // Decode function
-    var func = findFunctionByHash(functionHashes, t.input);
-
-    if (func == 'sellEnergy') {
-      // This is the sellEnergy() method
-      var inputData = SolidityCoder.decodeParams(["uint256"], t.input.substring(10));
-      console.dir(inputData);
-      $('#transactions').append('<tr><td>' + t.blockNumber + 
-        '</td><td>' + from + 
-        '</td><td>' + "ApolloTrade" + 
-        '</td><td>sellEnergy(' + inputData[0].toString() + ')</td></tr>');
-    } else if (func == 'buyEnergy') {
-      // This is the buyEnergy() method
-      var inputData = SolidityCoder.decodeParams(["uint256"], t.input.substring(10));
-      console.dir(inputData);
-      $('#transactions').append('<tr><td>' + t.blockNumber + 
-        '</td><td>' + from + 
-        '</td><td>' + "ApolloTrade" + 
-        '</td><td>buyEnergy(' + inputData[0].toString() + ')</td></tr>');
-    } else {
-      // Default log
-      $('#transactions').append('<tr><td>' + t.blockNumber + '</td><td>' + from + '</td><td>' + t.to + '</td><td>' + t.input + '</td></tr>')
-    }
-  }
-});
-*/
+function updateMap() {
+  // TODO: Update map
+  console.log('TODO');
+}
 
 // User functions
 $('#buyEcobux').click(buyEcobux);
@@ -72,16 +33,51 @@ function buyEcobux() {
   console.log(input);
 }
 
+$('#allowance').click(allowance);
+function allowance() {
+  var addr = document.getElementById('ownedAllotAddr').value;
+  contract.ownedAllotments(addr, function(err, data) {
+    console.log(err, data);
+  });
+}
+
+$('#apprEcob').click(apprEcob);
+function apprEcob() {
+  var to = PAJcontractAddress;//document.getElementById('apprEcobTo').value;
+  var amount = document.getElementById('apprEcobAmount').value;
+  console.log(to, amount);
+  
+  ecob.approve(amount, to, function(err, txHash){
+    let txReceipt = web3.eth.getTransactionReceipt(txHash);
+    // txReceipt.logs contains an array of all events fired while calling your fxn
+    console.log(err, txReceipt);
+    var log = txReceipt.logs[0];
+    var data = SolidityCoder.decodeParams(["address", "uint"], log.data.replace("0x", ""));
+    console.log(data);
+  });
+}
+
 $('#buyAllotment').click(buyAllotment);
 function buyAllotment() {
-  var input = document.getElementById('buyAllotInput').value;
-  console.log(input);
+  var to = document.getElementById('buyAllotTo').value;
+  var amount = document.getElementById('buyAllotAmount').value;
+  console.log(to, amount);
+  
+  contract.buyAllotments(amount, to, function(err, txHash){
+    let txReceipt = web3.eth.getTransactionReceipt(txHash);
+    // txReceipt.logs contains an array of all events fired while calling your fxn
+    console.log(err, txReceipt);
+    var log = txReceipt.logs[0];
+    var data = SolidityCoder.decodeParams(["address", "uint"], log.data.replace("0x", ""));
+    console.log(data);
+    //updateMap();
+  });
 }
 
 $('#buyAddon').click(buyAddon);
 function buyAddon() {
-  var input = document.getElementById('buyAddonInput').value;
-  console.log(input);
+  var allotId = document.getElementById('buyAllotAmount').value;
+  console.log(allotId);
 }
 
 // Testing Functions
@@ -93,13 +89,56 @@ function mintEcob() {
   var addr = document.getElementById('mintEcobAddr').value;
   var amount = document.getElementById('mintEcobAmount').value;
   console.log(addr, amount);
-  ecob.createEco(addr, amount, function(err, txHash){
+  ecob.createEco(addr, amount, {from: accounts[0]}, function(err, txHash){
     let txReceipt = web3.eth.getTransactionReceipt(txHash);
     // txReceipt.logs contains an array of all events fired while calling your fxn
     console.log(txReceipt);
   });
+}
+
+$('#createAllotment').click(createAllotment);
+function createAllotment() {
+  $.getJSON("contractAllotments.json", function(allotArray) {
+    console.log(allotArray);
+    contract.createAllotment(allotArray, {from: accounts[0]}, function(err, txHash) {
+      console.log(err, txHash);
+      let txReceipt = web3.eth.getTransactionReceipt(txHash);
+      // txReceipt.logs contains an array of all events fired while calling your fxn
+      console.log(err);
+      var log = txReceipt.logs[0];
+      console.log(log);
+      //var data = SolidityCoder.decodeParams(["address", "uint", "uint[2][][]", "uint"], log.data.replace("0x", ""));
+      //console.log(data);
+    });
+  
+  });
+  
+}
+
+$('#createAddon').click(createAddon);
+function createAddon() {
+  var price = document.getElementById('createAddonPrice').value;
+  var purchasable = document.getElementById('createAddonPurchasable').value;
+
+  contract.createMicro(price, purchasable, {from: accounts[0]}, function(err, txHash){
+    let txReceipt = web3.eth.getTransactionReceipt(txHash);
+    // txReceipt.logs contains an array of all events fired while calling your fxn
+    console.log(txReceipt);
+    var log = txReceipt.logs[0];
+    var data = SolidityCoder.decodeParams(["uint", "uint", "bool"], log.data.replace("0x", ""));
+    console.log(data);
+  });
 
 }
+
+$('#ownedAllotments').click(ownedAllotments);
+function ownedAllotments() {
+  var addr = document.getElementById('ownedAllotAddr').value;
+  contract.ownedAllotments(addr, function(err, data) {
+    console.log(err, data);
+  });
+}
+
 
 /*
 MyContract.stateModifyingFunction(arg1, arg2, function(err, txHash){
@@ -109,6 +148,8 @@ MyContract.stateModifyingFunction(arg1, arg2, function(err, txHash){
 */
 // Update labels every second
 setInterval(function() {
+  // Get the current active account
+  var account = $('#address').val();
 
   // Account balance in Ether
   var balanceWei = web3.eth.getBalance(account).toNumber();
@@ -127,6 +168,8 @@ setInterval(function() {
   var ecobBalance = ecob.balanceOf(account) / 100;
   $('#label4').text(ecobBalance);
 
+  // Update allotment map
+  //updateMap(); 
 }, 1000);
 
 // Get function hashes
@@ -254,6 +297,16 @@ geojson = L.geoJson(mamoniData, {
   onEachFeature: onEachFeature
 }).addTo(map);
 $( document ).ready(function() {
+  var optionsAsString = "";
+  for(var i = 0; i < accounts.length; i++) {
+    optionsAsString += "<option value='" + accounts[i] + "'>User: " + 
+                       i + "</option>";
+  }
+  $("select[name='address']").find('option')
+                             .remove()
+                             .end()
+                             .append($(optionsAsString));
+  
   setTimeout(function() {
     map.flyTo([9.315055, -79.134224], 19)
   }, 2000);
