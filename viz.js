@@ -9,6 +9,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 var accounts = web3.eth.accounts;
 var account = accounts[0];
 
+
 web3.eth.defaultAccount = account;
 
 // Assemble function hashes
@@ -26,6 +27,15 @@ function updateMap() {
 }
 
 // User functions
+$('#copyAddr').click(copyAddr);
+function copyAddr() {
+  // Put the selected user account into the clipboard
+  var copyText = document.getElementById("label3");
+  copyText.select();
+  document.execCommand('copy');
+}
+
+
 $('#buyEcobux').click(buyEcobux);
 function buyEcobux() {
   var input = document.getElementById('buyEcobInput').value;
@@ -162,7 +172,7 @@ setInterval(function() {
     $('#label2').text(number).effect("highlight");
 
   // Print account address (not state changing)
-  $('#label3').text(account);
+  $('#label3').val(account);
 
   // Check ecobucks balance: call (not state changing)
   var ecobBalance = ecob.balanceOf(account) / 100;
@@ -180,7 +190,9 @@ function getFunctionHashes(abi) {
   for (var i=0; i<abi.length; i++) {
     var item = abi[i];
     if (item.type != "function") continue;
-    var signature = item.name + "(" + item.inputs.map(function(input) {return input.type;}).join(",") + ")";
+    var signature = item.name + "(" + item.inputs.map(function(input) {
+      return input.type;
+    }).join(",") + ")";
     var hash = web3.sha3(signature);
     console.log(item.name + '=' + hash);
     hashes.push({name: item.name, hash: hash});
