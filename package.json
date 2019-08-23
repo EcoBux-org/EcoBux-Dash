@@ -1,5 +1,5 @@
 {
-  "name": "ecobuxs-dash",
+  "name": "ecobux-dash",
   "version": "1.0.0",
   "description": "Ecobux Dashboard",
   "main": "viz.js",
@@ -13,7 +13,7 @@
   "author": "Lucas Oberwager <lucas@ecobux.org>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ecobux/ecobuxs-dash/issues"
+    "url": "https://github.com/ecobux/ecobux-dash/issues"
   },
   "homepage": "https://ecobux.org/",
   "dependencies": {
