@@ -21,10 +21,6 @@ var functionHashes = getFunctionHashes(abiArray);
 var contract = web3.eth.contract(abiArray).at(PAJcontractAddress);
 var ecob = web3.eth.contract(abiArrayEcob).at(ECOBcontractAddress);
 
-function updateMap() {
-  // TODO: Update map
-  console.log('TODO');
-}
 
 // User functions
 $('#copyAddr').click(copyAddr);
@@ -80,7 +76,7 @@ function buyAllotment() {
     var log = txReceipt.logs[0];
     var data = SolidityCoder.decodeParams(["address", "uint"], log.data.replace("0x", ""));
     console.log(data);
-    //updateMap();
+    updateMap();
   });
 }
 
@@ -178,8 +174,6 @@ setInterval(function() {
   var ecobBalance = ecob.balanceOf(account) / 100;
   $('#label4').text(ecobBalance);
 
-  // Update allotment map
-  //updateMap(); 
 }, 1000);
 
 // Get function hashes
@@ -215,17 +209,17 @@ function findFunctionByHash(hashes, functionHash) {
 // Load map
 var geojson;
 
-var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
-var map = L.map('leaflet-map').setView([9.315055, -79.134224], 3);
+//var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
+var map = L.map('leaflet-map').setView([9.315055, -79.134224], 19); // 3 TODO: Change this back
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + mapboxAccessToken, {
+/*L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + mapboxAccessToken, {
     id: 'mapbox.light',
     maxZoom: 30,
     attribution: 'Map data &copy; ' +
       '<a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-}).addTo(map);
+}).addTo(map);*/
 
 L.control.scale().addTo(map);
 
@@ -256,29 +250,35 @@ info.addTo(map);
 
 // Add colors to data
 function getColor(d) {
-    return d==0 ? '#45286b' : 
-           d==1 ? '#67296B' :
-           d==2 ? '#2E6C29' :
+    return d==0 ? 'grey' : 
+           d==1 ? '#000' :
+           d==2 ? '#FFF' :
                   '#fff';console.log('Error in the owned allotments!')
+}
+// Add opacity to data
+function getOpacity(d) {
+    return d==0 ? '0.3' : 
+           d==1 ? '0.0' :
+           d==2 ? '0' :
+                  '1';console.log('Error in the owned allotments!')
 }
 function style(feature) {
     return {
-        fillColor: getColor(feature.properties.OWNED),
-        weight: 0.7,
-        opacity: 0.8,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.2
+        fillColor: '#D9CFC1',
+        weight: 1,
+        opacity: 1,
+        color: getColor(feature.properties.owned),
+        dashArray: '',
+        fillOpacity: getOpacity(feature.properties.owned) 
     };
 }
 function highlightFeature(e) {
     var layer = e.target;
-
     layer.setStyle({
         weight: 2,
-        color: '#666',
+        color: getColor(layer.feature.properties.owned),
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 0.2
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -291,8 +291,7 @@ function resetHighlight(e) {
     info.update();
 }
 function zoomToFeature(e) {
-    console.log(e.target.getBounds());
-    map.fitBounds(e.target.getBounds(), {padding: [150, 150]});
+    map.fitBounds(e.target.getBounds(), {padding: [50, 50]});
 }
 
 function onEachFeature(feature, layer) {
@@ -303,11 +302,55 @@ function onEachFeature(feature, layer) {
     });
 }
 
+// Format geojson data from coin storage to correct values
+// given the linear transition formula used
+// old coord * range + min
+latRange = 0.000000002472999993
+latMin = -79.13447876
+
+lngRange = 0.000000001404705343
+lngMin = 9.314199281
+
+for(i = 0; i < mamoniData["features"].length; ++i) {
+	for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length; ++j) {
+  		mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
+		mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
+     
+    }
+}
+
+function updateMap() {
+    console.log('interval')
+    for (i = 0; i < 3; ++i) {
+      geojson.eachLayer(function(layer) {
+        layer.setStyle({
+          fillColor: '#D9CFC1',
+          weight: 1,
+          opacity: 1,
+          color: getColor(layer.feature.properties.owned),
+          dashArray: '',
+          fillOpacity: getOpacity(layer.feature.properties.owned) 
+        });
+        if (layer.feature.properties.owned == i) {
+          layer.bringToFront();
+        }
+      });
+    }
+}
+// TODO: Delete this function once allotments can be bought
+function getRandomAllotments(max) {
+	for (i = 0;i<max;++i) {
+		mamoniData["features"][Math.floor(Math.random()*2700)]["properties"]["owned"] = Math.floor(Math.random()*3);
+	}
+	updateMap()
+}
 // Add geojson data to map
-geojson = L.geoJson(mamoniData, {
-  style: style, 
-  onEachFeature: onEachFeature
-}).addTo(map);
+function refreshJSON() {
+  geojson = L.geoJson(mamoniData, {
+    style: style, 
+    onEachFeature: onEachFeature
+  }).addTo(map);
+}
 $( document ).ready(function() {
   var optionsAsString = "";
   for(var i = 0; i < accounts.length; i++) {
@@ -318,8 +361,20 @@ $( document ).ready(function() {
                              .remove()
                              .end()
                              .append($(optionsAsString));
-  
+  refreshJSON()
+  var imageUrl = 'https://duncanflfh.files.wordpress.com/2010/06/p8180066.jpg';
+  var imageBounds = [[9.314199280639645, -79.13447876220697], [9.315603985982538, -79.13200576221352]];
+
+  L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+  getRandomAllotments(500)
+
+  setInterval(function() {
+    updateMap();
+  }, 10000);
+
   setTimeout(function() {
-    map.flyTo([9.315055, -79.134224], 19)
+   // TODO: FOR PROD UNCOMMENT
+   //  map.flyTo([9.315055, -79.134224], 19)
   }, 2000);
 });
