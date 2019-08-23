@@ -1,12 +1,12 @@
 {
-  "name": "solarchain-dashboard",
+  "name": "ecobux-dash",
   "authors": [
-    "Thomas Conte <thomas@conte.com>"
+    "Lucas Oberwager <lucas@ecobux.org>"
   ],
-  "description": "SolarChain dashboard",
+  "description": "Ecobux dash",
   "main": "index.html",
-  "license": "MIT",
-  "homepage": "http://hypernephelist.com/",
+  "license": "LSC",
+  "homepage": "https://ecobux.org/",
   "ignore": [
     "**/.*",
     "node_modules",
