@@ -5,7 +5,7 @@
   ],
   "description": "Ecobux dash",
   "main": "index.html",
-  "license": "LSC",
+  "license": "ISC",
   "homepage": "https://ecobux.org/",
   "ignore": [
     "**/.*",
