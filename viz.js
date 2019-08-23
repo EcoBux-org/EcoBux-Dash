@@ -235,7 +235,7 @@ info.onAdd = function (map) {
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
     this._div.innerHTML = '<h4>Mamoni Valley Land Allotments</h4>' + 
-      (props ? 'Allotment <b>#' + props.POLY_ID + 
+      (props ? 'Allotment <b>#' + (props.POLY_ID + 1) + 
       '</b><br />Current Owner: ' + 
       (
         props.owned === 0 ? 'Unowned' : 
