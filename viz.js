@@ -1,8 +1,8 @@
 // NOTE: Need to compile with browserify viz.js -o main.js
 var SolidityCoder = require("web3/lib/solidity/coder.js");
 
-var PAJcontractAddress = '0x5D1E04C0783700B61D04D02215344EE32B38C6A9';
-var ECOBcontractAddress = '0x394372eAE1E89C8D00DE8Bc1cb629fA24d1654aC';
+var PAJcontractAddress = '0x867b0c09DEb8675aA87Ef793eC695BF4178Afe8d';
+var ECOBcontractAddress = '0xDb9A0740277433ea5a232dc7B5F395FDDd3aDAEB';
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
@@ -53,31 +53,51 @@ function apprEcob() {
   var amount = document.getElementById('apprEcobAmount').value;
   console.log(to, amount);
   
-  ecob.approve(amount, to, function(err, txHash){
+  ecob.approve(to, amount, function(err, txHash){
     let txReceipt = web3.eth.getTransactionReceipt(txHash);
     // txReceipt.logs contains an array of all events fired while calling your fxn
     console.log(err, txReceipt);
     var log = txReceipt.logs[0];
-    var data = SolidityCoder.decodeParams(["address", "uint"], log.data.replace("0x", ""));
+    var data = SolidityCoder.decodeParams(
+                ["address", "uint"], log.data.replace("0x", "")
+               );
     console.log(data);
   });
 }
 
 $('#buyAllotment').click(buyAllotment);
 function buyAllotment() {
-  var to = document.getElementById('buyAllotTo').value;
+  //var to = document.getElementById('buyAllotTo').value;
   var amount = document.getElementById('buyAllotAmount').value;
-  console.log(to, amount);
+  /*console.log(to, amount);
   
   contract.buyAllotments(amount, to, function(err, txHash){
     let txReceipt = web3.eth.getTransactionReceipt(txHash);
     // txReceipt.logs contains an array of all events fired while calling your fxn
     console.log(err, txReceipt);
     var log = txReceipt.logs[0];
-    var data = SolidityCoder.decodeParams(["address", "uint"], log.data.replace("0x", ""));
+    var data = SolidityCoder.decodeParams(
+                ["address", "uint"], log.data.replace("0x", "")
+               );
     console.log(data);
     updateMap();
-  });
+  }); */
+
+  // TODO: Remove
+  console.log(PAJcontractAddress, account)
+  console.log(ecob.allowance(account, PAJcontractAddress).toNumber())
+  if (ecob.allowance(account, PAJcontractAddress).toNumber() >= amount*1500) {
+    newAllots = getRandomAllotments(amount, 2)
+    for (i = 0; i < amount; i++) {
+      (function(index) {
+        setTimeout(function() { 
+          map.flyTo(mamoniData["features"][newAllots[index]]["geometry"]["coordinates"][0][0].reverse(), 20)
+        }, i*5000);
+      })(i);
+    }
+  } else {
+    alert("Not enough ecobucks!")
+  }
 }
 
 $('#buyAddon').click(buyAddon);
@@ -87,8 +107,6 @@ function buyAddon() {
 }
 
 // Testing Functions
-
-
 
 $('#mintEcob').click(mintEcob);
 function mintEcob() {
@@ -113,7 +131,10 @@ function createAllotment() {
       console.log(err);
       var log = txReceipt.logs[0];
       console.log(log);
-      //var data = SolidityCoder.decodeParams(["address", "uint", "uint[2][][]", "uint"], log.data.replace("0x", ""));
+      //var data = SolidityCoder.decodeParams(
+      //            ["address", "uint", "uint[2][][]", "uint"], 
+      //            log.data.replace("0x", "")
+      //           );
       //console.log(data);
     });
   
@@ -131,7 +152,9 @@ function createAddon() {
     // txReceipt.logs contains an array of all events fired while calling your fxn
     console.log(txReceipt);
     var log = txReceipt.logs[0];
-    var data = SolidityCoder.decodeParams(["uint", "uint", "bool"], log.data.replace("0x", ""));
+    var data = SolidityCoder.decodeParams(
+                ["uint", "uint", "bool"], log.data.replace("0x", "")
+               );
     console.log(data);
   });
 
@@ -172,7 +195,8 @@ setInterval(function() {
 
   // Check ecobucks balance: call (not state changing)
   var ecobBalance = ecob.balanceOf(account) / 100;
-  $('#label4').text(ecobBalance);
+  var ecobAllowed = ecob.allowance(account, PAJcontractAddress);
+  $('#label4').text(ecobBalance + '/' + ecobAllowed);
 
 }, 1000);
 
@@ -209,17 +233,18 @@ function findFunctionByHash(hashes, functionHash) {
 // Load map
 var geojson;
 
-//var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
-var map = L.map('leaflet-map').setView([9.315055, -79.134224], 19); // 3 TODO: Change this back
+// TODO: Change this back to 3 in prod testing is 18
+var map = L.map('leaflet-map').setView([9.315056, -79.134224], 18); 
 
-/*L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + mapboxAccessToken, {
+var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
     id: 'mapbox.light',
     maxZoom: 30,
     attribution: 'Map data &copy; ' +
       '<a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-}).addTo(map);*/
+}).addTo(map);
 
 L.control.scale().addTo(map);
 
@@ -239,8 +264,8 @@ info.update = function (props) {
       '</b><br />Current Owner: ' + 
       (
         props.owned === 0 ? 'Unowned' : 
-        props.owned === 1 ? 'Owned by someone else' : 
-        props.owned === 2 ? 'Owned by you' :
+        props.owned === 1 ? 'Another user' : 
+        props.owned === 2 ? 'You' :
                             'Error.'
       ) 
       : 'Hover over an allotment');
@@ -250,27 +275,30 @@ info.addTo(map);
 
 // Add colors to data
 function getColor(d) {
-    return d==0 ? 'grey' : 
-           d==1 ? '#000' :
-           d==2 ? '#FFF' :
-                  '#fff';console.log('Error in the owned allotments!')
+    return d==0 ? '#7C7E82' : 
+           d==1 ? '#020506' :
+           d==2 ? '#F8F8F8' :
+                  '#931621';console.log('Error in the owned allotments!')
 }
 // Add opacity to data
 function getOpacity(d) {
-    return d==0 ? '0.3' : 
-           d==1 ? '0.0' :
-           d==2 ? '0' :
+    return d==0 ? '0.5' : 
+           d==1 ? '0.35' :
+           d==2 ? '0.15' :
                   '1';console.log('Error in the owned allotments!')
 }
-function style(feature) {
+function ownedStyle(owned) {
     return {
-        fillColor: '#D9CFC1',
+        fillColor: '#292B2E',
         weight: 1,
         opacity: 1,
-        color: getColor(feature.properties.owned),
+        color: getColor(owned),
         dashArray: '',
-        fillOpacity: getOpacity(feature.properties.owned) 
+        fillOpacity: getOpacity(owned) 
     };
+}
+function style(feature) {
+    return ownedStyle(feature.properties.owned);
 }
 function highlightFeature(e) {
     var layer = e.target;
@@ -282,7 +310,7 @@ function highlightFeature(e) {
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
+        //layer.bringToFront();
     }
     info.update(layer.feature.properties);
 }
@@ -312,37 +340,39 @@ lngRange = 0.000000001404705343
 lngMin = 9.314199281
 
 for(i = 0; i < mamoniData["features"].length; ++i) {
-	for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length; ++j) {
-  		mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
-		mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
-     
+  for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length;++j) {
+    mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
+    mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
     }
 }
 
 function updateMap() {
-    console.log('interval')
     for (i = 0; i < 3; ++i) {
       geojson.eachLayer(function(layer) {
-        layer.setStyle({
-          fillColor: '#D9CFC1',
-          weight: 1,
-          opacity: 1,
-          color: getColor(layer.feature.properties.owned),
-          dashArray: '',
-          fillOpacity: getOpacity(layer.feature.properties.owned) 
-        });
+        layer.setStyle(
+          ownedStyle(layer.feature.properties.owned)
+        );
         if (layer.feature.properties.owned == i) {
           layer.bringToFront();
         }
       });
     }
 }
+function rand(max) {
+  return Math.floor(Math.random()*max)
+}
+
 // TODO: Delete this function once allotments can be bought
-function getRandomAllotments(max) {
-	for (i = 0;i<max;++i) {
-		mamoniData["features"][Math.floor(Math.random()*2700)]["properties"]["owned"] = Math.floor(Math.random()*3);
-	}
-	updateMap()
+// Testing function to assign the allotments in demo
+function getRandomAllotments(max, owned) {
+  newAllots = [];
+  for (i = 0;i<max;++i) {
+    allotId = rand(2700)
+    mamoniData["features"][allotId]["properties"]["owned"] = owned;
+    newAllots.push(allotId);
+  }
+  updateMap()
+  return newAllots
 }
 // Add geojson data to map
 function refreshJSON() {
@@ -362,12 +392,17 @@ $( document ).ready(function() {
                              .end()
                              .append($(optionsAsString));
   refreshJSON()
-  var imageUrl = 'https://duncanflfh.files.wordpress.com/2010/06/p8180066.jpg';
-  var imageBounds = [[9.314199280639645, -79.13447876220697], [9.315603985982538, -79.13200576221352]];
+  var imageUrl = 'trees2.jpg';
+  var imageBounds = [
+    [9.314199280639645, -79.13447876220697], 
+    [9.315603985982538, -79.13200576221352]
+  ];
 
   L.imageOverlay(imageUrl, imageBounds).addTo(map);
+  
+  // TODO: Remove this once allotments can be bought properly
+  getRandomAllotments(2000, 1)
 
-  getRandomAllotments(500)
 
   setInterval(function() {
     updateMap();
@@ -376,5 +411,5 @@ $( document ).ready(function() {
   setTimeout(function() {
    // TODO: FOR PROD UNCOMMENT
    //  map.flyTo([9.315055, -79.134224], 19)
-  }, 2000);
+  }, 10000);
 });

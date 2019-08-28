@@ -99,18 +99,14 @@
             <button type="button" id="buyEcobux" disabled
               class="btn btn-primary">PayPal</button>
             <div class="form-group">
-              <label for="apprEcobAmount">Approve Ecobux:</label>
-              <input type="number" class="form-control" id="apprEcobAmount">
-            </div>
-            <button type="button" id="apprEcob" 
-              class="btn btn-primary">Approve</button>
-            <div class="form-group">
               <label for="buyAllotInput">Buy allotments:</label>
-              <input type="text" class="form-control" id="buyAllotTo">
+              <!--<input type="text" class="form-control" id="buyAllotTo">-->
               <input type="number" class="form-control" id="buyAllotAmount">
             </div>
             <button type="submit" id="buyAllotment"
-              class="btn btn-primary">Protect</button>
+              class="btn btn-primary">Buy with Ecobux</button>
+            <button type="button" id="buyEcobux" disabled
+              class="btn btn-primary">Buy with PayPal</button>
             <div class="form-group">
               <label for="buyAddon">Buy microaddons:</label>
               <input type="number" class="form-control" id="buyAddonInput">
@@ -129,6 +125,12 @@
       <div class="row">
         <div>
           <h2 class="sub-header">Testing Functions</h2>
+            <div class="form-group">
+              <label for="apprEcobAmount">Approve Ecobux:</label>
+              <input type="number" class="form-control" id="apprEcobAmount">
+            </div>
+            <button type="button" id="apprEcob" 
+              class="btn btn-primary">Approve</button>
             <div class="form-group">
               <label for="mintEcobAddr">Mint Ecobux:</label>
               <input type="text" class="form-control" id="mintEcobAddr">
