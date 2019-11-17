@@ -92,7 +92,7 @@ function buyAllotment() {
       (function(index) {
         setTimeout(function() { 
           map.flyTo(mamoniData["features"][newAllots[index]]["geometry"]["coordinates"][0][0].reverse(), 20)
-        }, i*5000);
+        }, i*10000);
       })(i);
     }
   } else {
@@ -122,13 +122,13 @@ function mintEcob() {
 
 $('#createAllotment').click(createAllotment);
 function createAllotment() {
-  $.getJSON("contractAllotments.json", function(allotArray) {
+  $.getJSON("allotments.json", function(allotArray) {
     console.log(allotArray);
-    contract.createAllotment(allotArray, {from: accounts[0]}, function(err, txHash) {
+    contract.createAllotment(allotArray, {from: accounts[0], gas: 8000000}, function(err, txHash) {
       console.log(err, txHash);
       let txReceipt = web3.eth.getTransactionReceipt(txHash);
       // txReceipt.logs contains an array of all events fired while calling your fxn
-      console.log(err);
+      console.log(txReceipt);
       var log = txReceipt.logs[0];
       console.log(log);
       //var data = SolidityCoder.decodeParams(
@@ -195,8 +195,8 @@ setInterval(function() {
 
   // Check ecobucks balance: call (not state changing)
   var ecobBalance = ecob.balanceOf(account) / 100;
-  var ecobAllowed = ecob.allowance(account, PAJcontractAddress);
-  $('#label4').text(ecobBalance + '/' + ecobAllowed);
+  var ecobAllowed = ecob.allowance(account, PAJcontractAddress) / 100;
+  $('#label4').text(ecobAllowed + "-" + ecobBalance);
 
 }, 1000);
 
@@ -236,8 +236,8 @@ var geojson;
 // TODO: Change this back to 3 in prod testing is 18
 var map = L.map('leaflet-map').setView([9.315056, -79.134224], 18); 
 
-var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+//var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
+/*L.tileLayer('tiles/{z}/{x}/{y}.png', {
     id: 'mapbox.light',
     maxZoom: 30,
     attribution: 'Map data &copy; ' +
@@ -245,7 +245,7 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 }).addTo(map);
-
+*/
 L.control.scale().addTo(map);
 
 // Custom Info Control
@@ -259,7 +259,7 @@ info.onAdd = function (map) {
 
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
-    this._div.innerHTML = '<h4>Mamoni Valley Land Allotments</h4>' + 
+    this._div.innerHTML = '<h4>Mamoni Valley Allotments</h4>' + 
       (props ? 'Allotment <b>#' + (props.POLY_ID + 1) + 
       '</b><br />Current Owner: ' + 
       (
@@ -319,6 +319,7 @@ function resetHighlight(e) {
     info.update();
 }
 function zoomToFeature(e) {
+    console.log(e.target.getBounds())
     map.fitBounds(e.target.getBounds(), {padding: [50, 50]});
 }
 
@@ -341,6 +342,11 @@ lngMin = 9.314199281
 
 for(i = 0; i < mamoniData["features"].length; ++i) {
   for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length;++j) {
+    if (JSON.stringify(mamoniData["features"][i]["geometry"]["coordinates"][0][j]) == "[0,0]") {
+      mamoniData["features"][i]["geometry"]["coordinates"][0].splice(j, 1);
+      --j;
+      continue
+    }
     mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
     mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
     }
@@ -395,7 +401,7 @@ $( document ).ready(function() {
   var imageUrl = 'trees2.jpg';
   var imageBounds = [
     [9.314199280639645, -79.13447876220697], 
-    [9.315603985982538, -79.13200576221352]
+    [9.315603985982538, -79.13174062421352]
   ];
 
   L.imageOverlay(imageUrl, imageBounds).addTo(map);

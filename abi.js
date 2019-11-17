@@ -639,7 +639,7 @@ var abiArray = [
       "inputs": [
         {
           "name": "_allotments",
-          "type": "uint256[2][][2001]"
+          "type": "uint256[2][5][2701]"
         }
       ],
       "name": "createAllotment",
