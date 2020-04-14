@@ -477,7 +477,7 @@ var abiArray = [
         {
           "indexed": false,
           "name": "geoMap",
-          "type": "uint256[2][]"
+          "type": "uint24[2][5]"
         },
         {
           "indexed": false,
@@ -525,6 +525,23 @@ var abiArray = [
         }
       ],
       "name": "NewAddon",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "msg",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "logID",
+          "type": "uint256"
+        }
+      ],
+      "name": "log",
       "type": "event"
     },
     {
@@ -639,7 +656,7 @@ var abiArray = [
       "inputs": [
         {
           "name": "_allotments",
-          "type": "uint256[2][5][2701]"
+          "type": "uint24[2][5][10]"
         }
       ],
       "name": "createAllotment",
@@ -665,36 +682,8 @@ var abiArray = [
           "type": "address"
         }
       ],
-      "name": "createTestAllotment",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_tokensDesired",
-          "type": "uint256"
-        },
-        {
-          "name": "_to",
-          "type": "address"
-        }
-      ],
       "name": "buyAllotments",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
+      "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
@@ -747,27 +736,9 @@ var abiArray = [
     },
     {
       "constant": false,
-      "inputs": [
-        {
-          "name": "id",
-          "type": "uint256"
-        }
-      ],
+      "inputs": [],
       "name": "withdrawAll",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "uint256[2][]"
-        },
-        {
-          "name": "",
-          "type": "uint16[]"
-        }
-      ],
+      "outputs": [],
       "payable": true,
       "stateMutability": "payable",
       "type": "function"
@@ -778,7 +749,7 @@ var abiArray = [
         {
           "name": "addy",
           "type": "address"
-        },
+        }
       ],
       "name": "ownedAllotments",
       "outputs": [
@@ -797,26 +768,6 @@ var abiArray = [
         {
           "name": "id",
           "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "address"
-        },
-        {
-          "name": "",
-          "type": "bytes"
-        },
-        {
-          "name": "",
-          "type": "bool"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "uint256"
         }
       ],
       "name": "allotmentDetails",
@@ -827,7 +778,7 @@ var abiArray = [
         },
         {
           "name": "",
-          "type": "uint256[2][]"
+          "type": "uint24[2][5]"
         },
         {
           "name": "",
@@ -949,7 +900,7 @@ var abiArray = [
       "stateMutability": "nonpayable",
       "type": "function"
     }
-];
+  ];
 
 var abiArrayEcob = [
     {

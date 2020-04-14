@@ -1,11 +1,21 @@
 // NOTE: Need to compile with browserify viz.js -o main.js
 var SolidityCoder = require("web3/lib/solidity/coder.js");
 
-var PAJcontractAddress = '0x867b0c09DEb8675aA87Ef793eC695BF4178Afe8d';
-var ECOBcontractAddress = '0xDb9A0740277433ea5a232dc7B5F395FDDd3aDAEB';
+network = "dev"
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+if (network === "ropsten") {
+  var PAJcontractAddress = '0x4DF38642b0FfF8186549B066394091baB8F72583';
+  var ECOBcontractAddress = '0x0e49059004513Aec9565317A4A2262ddd77A9c63';
 
+  var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546"));
+} else if (network === "dev") {
+  var PAJcontractAddress = '0xBb11DdCF232f5C7Dc18a5BDBE8060D004a2eC5ef';
+  var ECOBcontractAddress = '0x5c1e451495B2Cd0bfd060B38368F51648eeb9576';
+
+  var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+} else {
+  console.log("Unknown Network!")
+}
 var accounts = web3.eth.accounts;
 var account = accounts[0];
 
@@ -71,22 +81,22 @@ function buyAllotment() {
   var amount = document.getElementById('buyAllotAmount').value;
   /*console.log(to, amount);
   
-  contract.buyAllotments(amount, to, function(err, txHash){
-    let txReceipt = web3.eth.getTransactionReceipt(txHash);
-    // txReceipt.logs contains an array of all events fired while calling your fxn
-    console.log(err, txReceipt);
-    var log = txReceipt.logs[0];
-    var data = SolidityCoder.decodeParams(
-                ["address", "uint"], log.data.replace("0x", "")
-               );
-    console.log(data);
-    updateMap();
-  }); */
+  if (ecob.allowance(account, PAJcontractAddress).toNumber() >= amount*1500) {
+    contract.buyAllotments(amount, to, function(err, txHash){
+      let txReceipt = web3.eth.getTransactionReceipt(txHash);
+      // txReceipt.logs contains an array of all events fired while calling your fxn
+      console.log(err, txReceipt);
+      var log = txReceipt.logs[0];
+      var data = SolidityCoder.decodeParams(
+                  ["address", "uint"], log.data.replace("0x", "")
+                 );
+      console.log(data);
+      updateMap();
+    });
 
   // TODO: Remove
-  console.log(PAJcontractAddress, account)
+  /*console.log(PAJcontractAddress, account)
   console.log(ecob.allowance(account, PAJcontractAddress).toNumber())
-  if (ecob.allowance(account, PAJcontractAddress).toNumber() >= amount*1500) {
     newAllots = getRandomAllotments(amount, 2)
     for (i = 0; i < amount; i++) {
       (function(index) {
@@ -94,7 +104,7 @@ function buyAllotment() {
           map.flyTo(mamoniData["features"][newAllots[index]]["geometry"]["coordinates"][0][0].reverse(), 20)
         }, i*10000);
       })(i);
-    }
+    }*/
   } else {
     alert("Not enough ecobucks!")
   }
@@ -123,6 +133,8 @@ function mintEcob() {
 $('#createAllotment').click(createAllotment);
 function createAllotment() {
   $.getJSON("allotments.json", function(allotArray) {
+    console.log(allotArray);
+    allotArray = allotArray.slice(0,10)
     console.log(allotArray);
     contract.createAllotment(allotArray, {from: accounts[0], gas: 8000000}, function(err, txHash) {
       console.log(err, txHash);
@@ -163,9 +175,7 @@ function createAddon() {
 $('#ownedAllotments').click(ownedAllotments);
 function ownedAllotments() {
   var addr = document.getElementById('ownedAllotAddr').value;
-  contract.ownedAllotments(addr, function(err, data) {
-    console.log(err, data);
-  });
+  console.log(contract.ownedAllotments(addr))
 }
 
 
@@ -228,7 +238,7 @@ function findFunctionByHash(hashes, functionHash) {
 
 // Map functions
 
-
+/*
 
 // Load map
 var geojson;
@@ -245,7 +255,7 @@ var map = L.map('leaflet-map').setView([9.315056, -79.134224], 18);
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 }).addTo(map);
-*/
+
 L.control.scale().addTo(map);
 
 // Custom Info Control
@@ -387,6 +397,9 @@ function refreshJSON() {
     onEachFeature: onEachFeature
   }).addTo(map);
 }
+
+*/
+
 $( document ).ready(function() {
   var optionsAsString = "";
   for(var i = 0; i < accounts.length; i++) {
@@ -397,6 +410,8 @@ $( document ).ready(function() {
                              .remove()
                              .end()
                              .append($(optionsAsString));
+  /*
+
   refreshJSON()
   var imageUrl = 'trees2.jpg';
   var imageBounds = [
@@ -418,4 +433,6 @@ $( document ).ready(function() {
    // TODO: FOR PROD UNCOMMENT
    //  map.flyTo([9.315055, -79.134224], 19)
   }, 10000);
+
+  */
 });
