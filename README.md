@@ -1,21 +1,23 @@
-## TODO:
+# EcoBux Dashboard
 
-- Add the rest of the user functions
-  - Purchase Ecobux
-  - Buy Allotments
-  - Buy MicroAddons
-  - Check owned allotments
-- Add the rest of the testing functions
-  - Create allotments
-    - Its just going to be a shell script given a file as the number of allotments created is a constant
-  - Create microaddons
-  - Check how many ECOB PAJ contract owns (and payout?)
-- Add the admin functions
-  - Pause
-  - Resume
-  - Withdrawal
-- Convert mamoni.js to be pure geojson and load file into leaflet
-- Add different users to be able to show off allotments owned by others
+## Setup
+First, download and install the main EcoBux contract repository  
 
+With your directory tree looking as such:
+```
+Main directory
+|--EcoBux/ (Contract repo)
+|    |--Contracts/
+|    |--build/
+|--Website/ (This repo)
+```
 
-- Add two buttons to purchase an allotment, PayPal and Ecobucks
+Run a http server in the main directory like so:
+`python -m SimpleHTTPServer`
+
+And then go to [http://localhost:8000/website](http://localhost:8000/website)
+
+## Making Changes
+
+If you need to make changes to the dashboard environment, you must recompile the `viz.js` file with the following line:
+`browserify viz.js -o main.js`
