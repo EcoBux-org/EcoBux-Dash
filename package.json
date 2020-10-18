@@ -8,15 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ecobx/ecobuxs-dash.git"
+    "url": "git+https://github.com/ecobux-org/ecobux-dash.git"
   },
   "author": "Lucas Oberwager <lucas@ecobux.org>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ecobux/ecobux-dash/issues"
+    "url": "https://github.com/ecobux-org/ecobux-dash/issues"
   },
   "homepage": "https://ecobux.org/",
   "dependencies": {
-    "web3": "^0.17.0-alpha"
+    "web3": "^1.3.0"
+  },
+  "devDependencies": {
+    "local-web-server": "^4.2.1",
+    "ws": "^7.3.1"
   }
 }

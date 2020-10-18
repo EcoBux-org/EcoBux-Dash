@@ -63,7 +63,8 @@
                   </div>
                   <div class="col-xs-6 col-sm-3 placeholder">
                     <h4>Ecobux</h4>
-                    <span class="text-muted" id="label4"></span>
+                    <span class="text-muted" id="label4-1"></span>
+                    <span class="text-muted" id="label4-2"></span>
                   </div>
                 </div>
               </div>
@@ -119,12 +120,21 @@
             </div>
             <button type="button" id="mintEcob" 
               class="btn btn-primary">Mint</button>
+
             <div class="form-group">
               <label for="createBlockInput">Create EcoBlocks:</label>
               <!-- <input type="text" class="form-control" id="createBlockInput"> -->
             </div>
             <button type="submit" id="createEcoBlock"
               class="btn btn-primary">Create</button>
+
+            <div class="form-group">
+              <label for="giveBlockInput">Give EcoBlocks:</label>
+              <input type="text" class="form-control" id="giveBlockAddr" placeholder="To">
+              <input type="number" class="form-control" id="giveBlockAmount" placeholder="Amount">
+            </div>
+            <button type="submit" id="giveEcoBlock"
+              class="btn btn-primary">Force give</button>
             <!--
             <div class="form-group">
               <label for="createAddon">Create microaddons:</label>
@@ -142,7 +152,7 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/web3/dist/web3.min.js"></script>
 
-    <script src="mamoni.js"></script>
+    <script src="abi.js"></script>
     <script src="main.js"></script>
   </body>
 </html>
