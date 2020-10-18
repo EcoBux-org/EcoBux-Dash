@@ -1,19 +1,11 @@
 {
   "name": "ecobux-dash",
-  "authors": [
-    "Lucas Oberwager <lucas@ecobux.org>"
-  ],
+  "authors": ["Lucas Oberwager <lucas@ecobux.org>"],
   "description": "Ecobux dash",
   "main": "index.html",
   "license": "ISC",
   "homepage": "https://ecobux.org/",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
   "dependencies": {
     "bootstrap": "^3.3.6",
     "web3": "^0.16.0",

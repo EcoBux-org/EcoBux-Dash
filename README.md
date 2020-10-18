@@ -1,9 +1,11 @@
 # EcoBux Dashboard
 
 ## Setup
-First, download and install the main EcoBux contract repository  
+
+First, download and install the main EcoBux contract repository
 
 With your directory tree looking as such:
+
 ```
 Main directory
 |--EcoBux/ (Contract repo)

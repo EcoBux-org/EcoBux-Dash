@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "local-web-server": "^4.2.1",
+    "prettier": "^2.1.2",
     "ws": "^7.3.1"
   }
 }
