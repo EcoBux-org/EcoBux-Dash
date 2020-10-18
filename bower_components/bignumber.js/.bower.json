@@ -1,0 +1,14 @@
+{
+  "name": "bignumber.js",
+  "homepage": "https://github.com/MikeMcl/bignumber.js",
+  "version": "9.0.0",
+  "_release": "9.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v9.0.0",
+    "commit": "986fd70e514e58e86d43bc9944547d82658e47ae"
+  },
+  "_source": "https://github.com/MikeMcl/bignumber.js.git",
+  "_target": ">=2.0.0",
+  "_originalSource": "bignumber.js"
+}
