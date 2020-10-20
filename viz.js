@@ -4,7 +4,7 @@ const Web3 = require("web3");
 // Different contracts for each dev environment
 network = "gorli"; // local ; gorli ; main
 if (network === "local") {
-  // Mainnet will have a static address but the ABI file will still need to be loaded
+  // Mainnet & Gorli have static addresses but local changes each deploy
   $.ajaxSetup({
     async: false,
   });
@@ -24,10 +24,11 @@ if (network === "local") {
   });
   var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546"));
 } else if (network === "gorli") {
+  // Network Configuration for Goerli Testnet
   Piloto = "0x2537e4F98C462766851b66986c913Cc4d9338362";
   ECOBcontractAddress = "0xC1122117A777eC07286ecaa353A6fEb36B08AeAf";
 
-  var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546"));
+  var web3 = new Web3(new Web3.providers.HttpProvider("https://goerli.infura.io/v3/be1164b674ef4e05bc0f9c998e8add9d"));
 } else if (network === "main") {
   console.error("Main network not deployed yet, use gorli or local blockchain instead");
 } else {
@@ -35,12 +36,18 @@ if (network === "local") {
 }
 // var web3 = new Web3(new GSNProvider("http://localhost:8546"));
 
+// Setting admin wallet
+// In production, this sould be kept very secret, and should never be sent to clients
+web3.eth.accounts.wallet.add("06eb5380f031fcb2b7a0190798d9d106ac30ebd4ac40af73a80cfb1835fd55e3");
+
 // Setting user address
-web3.eth.getAccounts((err, res) => {
-  accounts = res;
-  account = accounts[0];
-  web3.eth.defaultAccount = account;
-});
+web3.eth.accounts.wallet.create(5)
+//web3.eth.accounts.wallet.create(1) // Create 1 wallet for user
+
+accounts = []
+for (i = 0; i < web3.eth.accounts.wallet.length; i++) {
+  accounts.push(web3.eth.accounts.wallet[i].address);
+}
 
 // Get hold of contract instance
 
@@ -76,14 +83,19 @@ function apprEcob() {
 
   ecob.methods
     .approve(to, amount)
-    .send({ from: account })
-    .on("receipt", function (receipt) {
-      console.log("Successfully approved " + amount + " EcoBux to the Piloto contract");
-      console.log(receipt);
-    })
-    .on("error", function (error, receipt) {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      console.error(error);
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
+      ecob.methods
+        .approve(to, amount)
+        .send({ from: account, gas: gasAmount})
+        .on("receipt", function (receipt) {
+          console.log("Successfully approved " + amount + " EcoBux to the Piloto contract");
+          console.log(receipt);
+        })
+        .on("error", function (error, receipt) {
+          // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+          console.error(error);
+        });
     });
 }
 
@@ -96,7 +108,11 @@ function buyEcoBlock() {
 
   contract.methods
     .buyEcoBlocks(amount, account)
-    .send({ from: account })
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
+  contract.methods
+    .buyEcoBlocks(amount, account)
+    .send({ from: account, gas: gasAmount})
     .on("receipt", function (receipt) {
       console.log("Purchased EcoBlock(s)");
       console.log(receipt);
@@ -104,6 +120,7 @@ function buyEcoBlock() {
     .on("error", function (error, receipt) {
       // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
       console.error(error);
+    });
     });
 }
 
@@ -122,16 +139,22 @@ function mintEcob() {
   var addr = document.getElementById("mintEcobAddr").value;
   var amount = document.getElementById("mintEcobAmount").value;
 
+  // Estimate gas cost 
   ecob.methods
     .createEco(addr, amount)
-    .send({ from: accounts[0] })
-    .on("receipt", function (receipt) {
-      console.log("Successfully given " + addr + " " + amount + " Ecobux");
-      console.log(receipt);
-    })
-    .on("error", function (error, receipt) {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      console.error(error);
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
+      ecob.methods
+        .createEco(addr, amount)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount})
+        .on("receipt", function (receipt) {
+          console.log("Successfully given " + addr + " " + amount + " Ecobux");
+          console.log(receipt);
+        })
+        .on("error", function (error, receipt) {
+          // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+          console.error(error);
+        });
     });
 }
 
@@ -142,9 +165,14 @@ function createEcoBlock() {
     // Only add first 10 EcoBlocks
     blockArray = blockArray.slice(0, 10);
 
+  // Estimate gas cost 
+  contract.methods
+    .bulkCreateEcoBlocks(blockArray)
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
     contract.methods
       .bulkCreateEcoBlocks(blockArray)
-      .send({ from: accounts[0] })
+      .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount})
       .on("receipt", function (receipt) {
         console.log("Successfully created 10 EcoBlocks, given to the Piloto contract");
       })
@@ -152,6 +180,7 @@ function createEcoBlock() {
         // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
         console.error(error);
       });
+    });
   });
 }
 
@@ -161,15 +190,22 @@ function createAddon() {
   var price = document.getElementById("createAddonPrice").value;
   var purchasable = document.getElementById("createAddonPurchasable").value;
 
+  // Estimate gas cost 
   contract.methods
     .createMicro(price, purchasable)
-    .send({ from: accounts[0] })
-    .on("receipt", function (receipt) {
-      console.log("Successfully created microaddon");
-    })
-    .on("error", function (error, receipt) {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      console.error(error);
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
+      // Send transaction
+      contract.methods
+        .createMicro(price, purchasable)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount})
+        .on("receipt", function (receipt) {
+          console.log("Successfully created microaddon");
+        })
+        .on("error", function (error, receipt) {
+          // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+          console.error(error);
+        });
     });
 }
 
@@ -179,16 +215,22 @@ function giveEcoBlock() {
   var amount = document.getElementById("giveBlockAmount").value;
   var account = document.getElementById("giveBlockAddr").value;
 
-  // 1500 is cost (in decimals) of one EcoBlock
+  // Estimate gas cost 
   contract.methods
     .giveEcoBlocks(amount, account)
-    .send({ from: accounts[0] })
-    .on("receipt", function (receipt) {
-      console.log(`Successfully gave ${amount} Ecoblocks`);
-    })
-    .on("error", function (error, receipt) {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      console.error(error);
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address})
+    .then(function(gasAmount){
+      // Send transaction
+      contract.methods
+        .giveEcoBlocks(amount, account)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
+        .on("receipt", function (receipt) {
+          console.log(`Successfully gave ${amount} Ecoblocks`);
+        })
+        .on("error", function (error, receipt) {
+          // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+          console.error(error);
+        });
     });
 }
 
