@@ -1,25 +1,20 @@
 # EcoBux Dashboard
 
-## Setup
+## Website
 
-First, download and install the main EcoBux contract repository
+This development enviroment is hosted at [https://ecobux.lucas.tools](https://ecobux.luacs.tools)
 
-With your directory tree looking as such:
+## Local Installation 
 
-```
-Main directory
-|--EcoBux/ (Contract repo)
-|    |--Contracts/
-|    |--build/
-|--Website/ (This repo)
-```
+First, make sure all packages are installed with 
+`npm install`
 
-Run a http server in the main directory like so:
-`python -m SimpleHTTPServer`
+Then, run a static http server in the main directory like so:
+`npm run run`
 
-And then go to [http://localhost:8000/website](http://localhost:8000/website)
+And then go to [http://localhost:8000/](http://localhost:8000/)
 
-## Making Changes
+### Making Changes
 
 If you need to make changes to the dashboard environment, you must recompile the `viz.js` file with the following line:
 `browserify viz.js -o main.js`

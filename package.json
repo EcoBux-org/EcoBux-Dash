@@ -4,7 +4,8 @@
   "description": "Ecobux Dashboard",
   "main": "viz.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "ws"
   },
   "repository": {
     "type": "git",
