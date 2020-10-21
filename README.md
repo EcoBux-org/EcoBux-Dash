@@ -1,8 +1,10 @@
 # EcoBux Dashboard
 
+# Setup
+
 ## Website
 
-This development enviroment is hosted at [https://ecobux.lucas.tools](https://ecobux.luacs.tools)
+This development enviroment is hosted at [https://ecobux.lucas.tools](https://ecobux.lucas.tools)
 
 ## Local Installation
 
