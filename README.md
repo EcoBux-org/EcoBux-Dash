@@ -4,9 +4,9 @@
 
 This development enviroment is hosted at [https://ecobux.lucas.tools](https://ecobux.luacs.tools)
 
-## Local Installation 
+## Local Installation
 
-First, make sure all packages are installed with 
+First, make sure all packages are installed with
 `npm install`
 
 Then, run a static http server in the main directory like so:
