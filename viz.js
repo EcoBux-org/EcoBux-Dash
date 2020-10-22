@@ -161,6 +161,7 @@ function mintEcob() {
 }
 
 // Function while initializing contract to load all EcoBlocks
+// Call this if there are no more EcoBlocks for testing
 $("#createEcoBlock").click(createEcoBlock);
 function createEcoBlock() {
   $.getJSON("EcoBlocks.json", function (blockArray) {
@@ -227,6 +228,7 @@ function giveEcoBlock() {
         .giveEcoBlocks(amount, account)
         .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
         .on("receipt", function (receipt) {
+          // Transaction Successful.
           console.log(`Successfully gave ${amount} Ecoblocks`);
         })
         .on("error", function (error, receipt) {
