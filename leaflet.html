@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <!-- Leaflet-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+
+    <style>
+      #leaflet-map { height: 80%; }
+    </style>
+    <script src="mamoni.js"></script>
+  </head>
+  <body>
+      <div id="leaflet-map"></div>
+    <script>
+var map = L.map('leaflet-map').setView([9.315056, -79.134224], 18); 
+
+// var mapboxAccessToken = "pk.eyJ1IjoibHVjYXNvYmUiLCJhIjoiY2p5cWdqeTI2MDA1YzNpcjNkdHkya3BieCJ9.1sPGdqMODcBf8w8gG0-KRw";
+// L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     id: 'mapbox.light',
+//     maxZoom: 30,
+//     attribution: 'Map data &copy; ' +
+//       '<a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+//       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+//       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+// }).addTo(map);
+
+L.control.scale().addTo(map);
+
+
+// Add colors to data
+function getColor(d) {
+    return d==0 ? '#7C7E82' : 
+           d==1 ? '#020506' :
+           d==2 ? '#F8F8F8' :
+                  '#931621';console.log('Error in the owned allotments!')
+}
+// Add opacity to data
+function getOpacity(d) {
+    return d==0 ? '0.5' : 
+           d==1 ? '0.35' :
+           d==2 ? '0.15' :
+                  '1';console.log('Error in the owned allotments!')
+}
+function ownedStyle(owned) {
+    return {
+        fillColor: '#292B2E',
+        weight: 1,
+        opacity: 0,
+        color: getColor(owned),
+        dashArray: '',
+        fillOpacity: getOpacity(owned) 
+    };
+}
+function style(feature) {
+    return ownedStyle(feature.properties.owned);
+}
+function zoomToFeature(e) {
+    console.log(e.target.getBounds())
+    map.fitBounds(e.target.getBounds(), {padding: [50, 50]});
+}
+
+function style(feature) {
+    return ownedStyle(feature.properties.owned);
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        click: zoomToFeature
+    });
+}
+// Add each EcoBlock
+// Format geojson data from coin storage to correct values
+// given the linear transition formula used
+// old coord * range + min
+latRange = 0.000000002472999993
+latMin = -79.13447876
+
+lngRange = 0.000000001404705343
+lngMin = 9.314199281
+
+for(i = 0; i < mamoniData["features"].length; ++i) {
+  for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length;++j) {
+    if (JSON.stringify(mamoniData["features"][i]["geometry"]["coordinates"][0][j]) == "[0,0]") {
+      mamoniData["features"][i]["geometry"]["coordinates"][0].splice(j, 1);
+      --j;
+      continue
+    }
+    mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
+    mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
+    }
+}
+
+$( document ).ready(function() {
+  var imageUrl = 'Elitrees.tif';
+  var imageBounds = [
+    [9.314199280639645, -79.13447876220697], 
+    [9.315603985982538, -79.13174062421352]
+  ];
+
+  L.imageOverlay(imageUrl, imageBounds).addTo(map);
+  geojson = L.geoJson(mamoniData, {
+    style: style, 
+    onEachFeature: onEachFeature
+  }).addTo(map);
+});
+    </script>
+  </body>
+</html>
