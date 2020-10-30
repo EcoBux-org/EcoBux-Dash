@@ -1,3 +1,4 @@
+# [<img src="https://www.ecobux.org/images/logo.svg" alt="EcoBux">](https://ecobux.org)
 # EcoBux Dashboard
 
 # Setup
