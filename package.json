@@ -29,8 +29,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier",
-      "post-commit": ".git/hooks/post-commit.playsound"
+      "pre-commit": "npm run prettier"
     }
   }
 }
