@@ -51,7 +51,7 @@ function ownedStyle(owned) {
     return {
         fillColor: '#292B2E',
         weight: 1,
-        opacity: 0,
+        opacity: 0.5,
         color: getColor(owned),
         dashArray: '',
         fillOpacity: getOpacity(owned) 
@@ -74,33 +74,12 @@ function onEachFeature(feature, layer) {
         click: zoomToFeature
     });
 }
-// Add each EcoBlock
-// Format geojson data from coin storage to correct values
-// given the linear transition formula used
-// old coord * range + min
-latRange = 0.000000002472999993
-latMin = -79.13447876
-
-lngRange = 0.000000001404705343
-lngMin = 9.314199281
-
-for(i = 0; i < mamoniData["features"].length; ++i) {
-  for(j=0; j < mamoniData["features"][i]["geometry"]["coordinates"][0].length;++j) {
-    if (JSON.stringify(mamoniData["features"][i]["geometry"]["coordinates"][0][j]) == "[0,0]") {
-      mamoniData["features"][i]["geometry"]["coordinates"][0].splice(j, 1);
-      --j;
-      continue
-    }
-    mamoniData["features"][i]["geometry"]["coordinates"][0][j][0] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][0]*latRange+latMin;
-    mamoniData["features"][i]["geometry"]["coordinates"][0][j][1] = mamoniData["features"][i]["geometry"]["coordinates"][0][j][1]*lngRange+lngMin;
-    }
-}
 
 $( document ).ready(function() {
-  var imageUrl = 'Elitrees.tif';
+  var imageUrl = 'trees2.jpg';
   var imageBounds = [
-    [9.314199280639645, -79.13447876220697], 
-    [9.315603985982538, -79.13174062421352]
+    [9.3141992, -79.1344787], 
+    [9.3156039, -79.1317406]
   ];
 
   L.imageOverlay(imageUrl, imageBounds).addTo(map);
