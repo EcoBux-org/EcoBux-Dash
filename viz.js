@@ -284,7 +284,7 @@ setInterval(function () {
     .then(function (allowed) {
       $("#label4-2").text(allowed / 100 + " (Approved to contract)");
     });
-}, 1000);
+}, 10000);
 
 $(document).ready(function () {
   var optionsAsString = "";
