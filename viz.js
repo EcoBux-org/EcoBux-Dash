@@ -25,8 +25,9 @@ if (network === "local") {
   var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546"));
 } else if (network === "gorli") {
   // Network Configuration for Goerli Testnet
-  Piloto = "0x2537e4F98C462766851b66986c913Cc4d9338362";
-  ECOBcontractAddress = "0xC1122117A777eC07286ecaa353A6fEb36B08AeAf";
+  Piloto = "0x88a9503E01f4f02E50b9e89E77C55CDEdbA2C704";
+  PilotoFuture = "0x651303b01B0803BB63693cbD72Ed29C444565B09";
+  ECOBcontractAddress = "0xC81B1a00B741b6226D24aB39AfB7384D5BBc764f";
 
   var web3 = new Web3(
     new Web3.providers.HttpProvider("https://goerli.infura.io/v3/be1164b674ef4e05bc0f9c998e8add9d")
@@ -54,6 +55,7 @@ for (i = 0; i < web3.eth.accounts.wallet.length; i++) {
 // Get hold of contract instance
 
 var contract = new web3.eth.Contract(PilotoAbi, Piloto);
+var future = new web3.eth.Contract(PilotoFutureAbi, PilotoFuture);
 var ecob = new web3.eth.Contract(EcobAbi, ECOBcontractAddress);
 
 // User functions
@@ -204,6 +206,32 @@ function createAddon() {
         .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
         .on("receipt", function (receipt) {
           console.log("Successfully created microaddon");
+        })
+        .on("error", function (error, receipt) {
+          // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+          console.error(error);
+        });
+    });
+}
+
+// Function while initializing contract to load all EcoBlocks
+$("#giveFuture").click(giveFuture);
+function giveFuture() {
+  var amount = document.getElementById("giveFutureAmount").value;
+  var account = document.getElementById("giveFutureAddr").value;
+
+  // Estimate gas cost
+  future.methods
+    .giveFuture(amount, account)
+    .estimateGas({ from: web3.eth.accounts.wallet[0].address })
+    .then(function (gasAmount) {
+      // Send transaction
+      future.methods
+        .giveFuture(amount, account)
+        .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
+        .on("receipt", function (receipt) {
+          // Transaction Successful.
+          console.log(`Successfully gave ${amount} Future`);
         })
         .on("error", function (error, receipt) {
           // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
