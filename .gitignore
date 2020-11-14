@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io/api/bower
 
+.DS_Store
+
 .bower-cache
 .bower-registry
 .bower-tmp
