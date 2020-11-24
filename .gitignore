@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/bower
 
+# Dont store keyfile
+keys.js
+
 .DS_Store
 
 .bower-cache

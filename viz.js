@@ -25,9 +25,9 @@ if (network === "local") {
   var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546"));
 } else if (network === "gorli") {
   // Network Configuration for Goerli Testnet
-  Piloto = "0x88a9503E01f4f02E50b9e89E77C55CDEdbA2C704";
-  PilotoFuture = "0x651303b01B0803BB63693cbD72Ed29C444565B09";
-  ECOBcontractAddress = "0xC81B1a00B741b6226D24aB39AfB7384D5BBc764f";
+  Piloto = "0x3e701765201e0C8D821422f043EF5D8FD04210Ec";
+  PilotoFuture = "0x9892aE2D3Ed2106e8E3E31896B48A1089909f9f6";
+  ECOBcontractAddress = "0xcf9Fd40b3E65C9Cd151aca0508C101Ea09a9CAF4";
 
   var web3 = new Web3(
     new Web3.providers.HttpProvider("https://goerli.infura.io/v3/be1164b674ef4e05bc0f9c998e8add9d")
@@ -41,7 +41,7 @@ if (network === "local") {
 
 // Setting admin wallet
 // In production, this sould be kept very secret, and should never be sent to clients
-web3.eth.accounts.wallet.add("06eb5380f031fcb2b7a0190798d9d106ac30ebd4ac40af73a80cfb1835fd55e3");
+web3.eth.accounts.wallet.add(ETHSECRET);
 
 // Setting user address
 web3.eth.accounts.wallet.create(5);
@@ -160,6 +160,36 @@ function mintEcob() {
           console.error(error);
         });
     });
+}
+
+// Function while initializing contract to create all EcoBlocks
+$("#createAllEcoBlock").click(createAllEcoBlock);
+async function createAllEcoBlock() {
+  $.getJSON("EcoBlocks.json", function (blocks) {
+    const index = 50;
+    // Estimate gas cost
+    contract.methods
+      .bulkCreateEcoBlocks(index)
+      .estimateGas({ from: web3.eth.accounts.wallet[0].address })
+      .then(async function (gasAmount) {
+        for (i = 0; i < (2700/50)-1; i++) {
+          console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+          // Only add first 50 EcoBlocks
+          subBlocks = 50;
+
+          await contract.methods
+            .bulkCreateEcoBlocks(subBlocks)
+            .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
+            .on("receipt", function (receipt) {
+              console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+            })
+            .on("error", function (error, receipt) {
+              // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+              console.error(error);
+            });
+        };
+      });
+  });
 }
 
 // Function while initializing contract to load all EcoBlocks
