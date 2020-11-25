@@ -29,9 +29,7 @@ if (network === "local") {
   PilotoFuture = "0x9892aE2D3Ed2106e8E3E31896B48A1089909f9f6";
   ECOBcontractAddress = "0xcf9Fd40b3E65C9Cd151aca0508C101Ea09a9CAF4";
 
-  var web3 = new Web3(
-    new Web3.providers.HttpProvider("https://goerli.infura.io/v3/be1164b674ef4e05bc0f9c998e8add9d")
-  );
+  var web3 = new Web3(new Web3.providers.HttpProvider("https://goerli.infura.io/v3/" + INFURAKEY));
 } else if (network === "main") {
   console.error("Main network not deployed yet, use gorli or local blockchain instead");
 } else {
@@ -172,8 +170,14 @@ async function createAllEcoBlock() {
       .bulkCreateEcoBlocks(index)
       .estimateGas({ from: web3.eth.accounts.wallet[0].address })
       .then(async function (gasAmount) {
-        for (i = 0; i < (2700/50)-1; i++) {
-          console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+        for (i = 0; i < 2700 / 50 - 1; i++) {
+          console.log(
+            "Successfully created EcoBlocks " +
+              i * 50 +
+              "-" +
+              (i + 1) * 50 +
+              ", given to the Piloto contract"
+          );
           // Only add first 50 EcoBlocks
           subBlocks = 50;
 
@@ -181,13 +185,19 @@ async function createAllEcoBlock() {
             .bulkCreateEcoBlocks(subBlocks)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
             .on("receipt", function (receipt) {
-              console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+              console.log(
+                "Successfully created EcoBlocks " +
+                  i * 50 +
+                  "-" +
+                  (i + 1) * 50 +
+                  ", given to the Piloto contract"
+              );
             })
             .on("error", function (error, receipt) {
               // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
               console.error(error);
             });
-        };
+        }
       });
   });
 }
