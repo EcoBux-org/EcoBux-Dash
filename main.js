@@ -80969,7 +80969,7 @@ arguments[4][179][0].apply(exports,arguments)
 const Web3 = require("web3");
 
 // Different contracts for each dev environment
-network = "gorli"; // local ; gorli ; main
+network = "main"; // local ; gorli ; main
 if (network === "local") {
   // Mainnet & Gorli have static addresses but local changes each deploy
   $.ajaxSetup({
@@ -80996,11 +80996,14 @@ if (network === "local") {
   PilotoFuture = "0x9892aE2D3Ed2106e8E3E31896B48A1089909f9f6";
   ECOBcontractAddress = "0xcf9Fd40b3E65C9Cd151aca0508C101Ea09a9CAF4";
 
-  var web3 = new Web3(
-    new Web3.providers.HttpProvider("https://goerli.infura.io/v3/be1164b674ef4e05bc0f9c998e8add9d")
-  );
+  var web3 = new Web3(new Web3.providers.HttpProvider("https://goerli.infura.io/v3/" + INFURAKEY));
 } else if (network === "main") {
-  console.error("Main network not deployed yet, use gorli or local blockchain instead");
+  // Network Configuration for Goerli Testnet
+  Piloto = "0xF7F02F6FC1604Bd7eEd6A400d049Ed0d8BAE175D";
+  PilotoFuture = "0x35808229e2c03Fc85f83c45D73F3CE1b6D2D9C96";
+  ECOBcontractAddress = "0x7ba4bF9d17673bc46bcf81D5D16a1eDC52A616a0";
+
+  var web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/" + INFURAKEY));
 } else {
   console.error("Network name not recognized.");
 }
@@ -81139,8 +81142,14 @@ async function createAllEcoBlock() {
       .bulkCreateEcoBlocks(index)
       .estimateGas({ from: web3.eth.accounts.wallet[0].address })
       .then(async function (gasAmount) {
-        for (i = 0; i < (2700/50)-1; i++) {
-          console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+        for (i = 0; i < 2700 / 50 - 1; i++) {
+          console.log(
+            "Successfully created EcoBlocks " +
+              i * 50 +
+              "-" +
+              (i + 1) * 50 +
+              ", given to the Piloto contract"
+          );
           // Only add first 50 EcoBlocks
           subBlocks = 50;
 
@@ -81148,13 +81157,19 @@ async function createAllEcoBlock() {
             .bulkCreateEcoBlocks(subBlocks)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasAmount })
             .on("receipt", function (receipt) {
-              console.log("Successfully created EcoBlocks " + (i*50) + "-" + ((i+1)*50) + ", given to the Piloto contract");
+              console.log(
+                "Successfully created EcoBlocks " +
+                  i * 50 +
+                  "-" +
+                  (i + 1) * 50 +
+                  ", given to the Piloto contract"
+              );
             })
             .on("error", function (error, receipt) {
               // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
               console.error(error);
             });
-        };
+        }
       });
   });
 }

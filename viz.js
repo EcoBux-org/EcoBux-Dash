@@ -2,7 +2,7 @@
 const Web3 = require("web3");
 
 // Different contracts for each dev environment
-network = "gorli"; // local ; gorli ; main
+network = "main"; // local ; gorli ; main
 if (network === "local") {
   // Mainnet & Gorli have static addresses but local changes each deploy
   $.ajaxSetup({
@@ -31,7 +31,12 @@ if (network === "local") {
 
   var web3 = new Web3(new Web3.providers.HttpProvider("https://goerli.infura.io/v3/" + INFURAKEY));
 } else if (network === "main") {
-  console.error("Main network not deployed yet, use gorli or local blockchain instead");
+  // Network Configuration for Goerli Testnet
+  Piloto = "0xF7F02F6FC1604Bd7eEd6A400d049Ed0d8BAE175D";
+  PilotoFuture = "0x35808229e2c03Fc85f83c45D73F3CE1b6D2D9C96";
+  ECOBcontractAddress = "0x7ba4bF9d17673bc46bcf81D5D16a1eDC52A616a0";
+
+  var web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/" + INFURAKEY));
 } else {
   console.error("Network name not recognized.");
 }
